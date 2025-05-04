@@ -4,8 +4,14 @@ interface BasicButtonProps {
   name: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
+  isPending?: boolean;
 }
-const BasicButton = ({ name, type, disabled }: BasicButtonProps) => {
+const BasicButton = ({
+  name,
+  type,
+  disabled,
+  isPending = false,
+}: BasicButtonProps) => {
   return (
     <Button
       variant="contained"
@@ -18,6 +24,7 @@ const BasicButton = ({ name, type, disabled }: BasicButtonProps) => {
       }}
       type={type}
       disabled={disabled}
+      loading={isPending}
     >
       {name}
     </Button>

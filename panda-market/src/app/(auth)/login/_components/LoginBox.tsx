@@ -5,10 +5,13 @@ import PasswordInput from "@/core/components/inputs/PasswordInput";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { LoginData } from "../types/formDatas";
 import TextInput from "@/core/components/inputs/TextInput";
+import { login } from "@/app/actions/auth";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect } from "react";
+import { useAuth } from "@/core/lib/store/AuthContext";
 
 const LoginBox = () => {
   const {
-    handleSubmit,
     control,
     formState: { errors, isValid },
   } = useForm<LoginData>({
@@ -18,11 +21,32 @@ const LoginBox = () => {
     },
     mode: "onChange",
   });
-  const onSubmit: SubmitHandler<LoginData> = (data) => {
-    console.log(data);
-  };
+
+  const [state, formAction, isPending] = useActionState(login, {
+    success: false,
+    error: null,
+    user: null,
+  });
+
+  const router = useRouter();
+
+  console.log("Form state:", state);
+  const { setUser } = useAuth();
+
+  useEffect(() => {
+    if (state.success) {
+      console.log("Login successful, redirecting to /");
+      setUser({
+        nickname: state.user.nickname,
+        profileImg: state.user.profileImg,
+      });
+      router.push("/");
+    }
+  }, [state.success, router]);
+
   return (
     <form
+      action={formAction}
       style={{
         width: "100%",
         maxWidth: "640px", // 입력 필드 너비 제한
@@ -32,7 +56,6 @@ const LoginBox = () => {
         alignItems: "center", // 내부 요소 중앙 정렬
         gap: "20px",
       }}
-      onSubmit={handleSubmit(onSubmit)}
     >
       <TextInput<LoginData>
         name="email"
@@ -53,7 +76,7 @@ const LoginBox = () => {
         control={control}
         name="password"
       />
-      <BasicButton name="로그인" type="submit" disabled={!isValid} />
+      <BasicButton name="로그인" type="submit" disabled={!isValid} isPending={isPending} />
     </form>
   );
 };

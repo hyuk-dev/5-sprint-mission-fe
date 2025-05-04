@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   FormControl,
@@ -11,58 +10,53 @@ import {
   OutlinedInput,
 } from "@mui/material";
 import React from "react";
-import { Control, Controller, FieldError, FieldValues, Path } from "react-hook-form";
+import { Control, Controller, FieldError, FieldValues, Path, UseFormWatch } from "react-hook-form";
 
-interface PasswordInputProps<T extends FieldValues> {
+interface ConfirmPasswordInputProps<T extends FieldValues> {
   label: string;
   error: FieldError | undefined;
   control: Control<T>;
   name: Path<T>;
+  watch: UseFormWatch<T>; // 비밀번호 필드를 감시하기 위해
+  passwordFieldName: Path<T>; // 원래 비밀번호 필드 이름
 }
 
-const PasswordInput = <T extends FieldValues>({
+const ConfirmPasswordInput = <T extends FieldValues>({
   label,
   error,
   control,
   name,
-}: PasswordInputProps<T>) => {
+  watch,
+  passwordFieldName,
+}: ConfirmPasswordInputProps<T>) => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const password = watch(passwordFieldName); // 원래 비밀번호 값
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+  const handleMouseUpPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
 
-  const handleMouseUpPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
   return (
     <Controller
       name={name}
       control={control}
       rules={{
-        required: '패스워드를 입력해주세요.',
-        minLength: {
-          value: 8,
-          message: '비밀번호는 최소 8자 이상이어야 합니다.'
-        },
-        pattern: {
-          value: /^(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[a-z\d!@#$%^&*]{8,}$/,
-          message:
-            "비밀번호는 영문 소문자, 숫자, 특수기호를 포함해야 합니다.",
-        },
+        required: "비밀번호 확인을 입력해주세요.",
+        validate: (value) =>
+          value === password || "비밀번호가 일치하지 않습니다.",
       }}
       render={({ field }) => (
         <FormControl sx={{ m: 1, width: "100%" }} variant="outlined" error={!!error}>
-          <InputLabel htmlFor="outlined-adornment-password" >
+          <InputLabel htmlFor="outlined-adornment-confirm-password">
             {label}
           </InputLabel>
           <OutlinedInput
             {...field}
-            id="outlined-adornment-password"
+            id="outlined-adornment-confirm-password"
             type={showPassword ? "text" : "password"}
             endAdornment={
               <InputAdornment position="end">
@@ -79,21 +73,15 @@ const PasswordInput = <T extends FieldValues>({
                 </IconButton>
               </InputAdornment>
             }
-            label="Password"
+            label="Password Confirm"
             fullWidth
             error={!!error}
           />
-          {
-            error && (
-              <FormHelperText>{error.message}</FormHelperText>
-            )
-          }
+          {error && <FormHelperText>{error.message}</FormHelperText>}
         </FormControl>
       )}
-    >
+    />
+  );
+};
 
-    </Controller>
-  )
-}
-
-export default PasswordInput;
+export default ConfirmPasswordInput;
