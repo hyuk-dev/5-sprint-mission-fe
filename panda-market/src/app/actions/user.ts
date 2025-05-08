@@ -13,7 +13,8 @@ export async function getUser() {
       method: "GET",
       headers: {
         Cookie: `connect.sid=${sessionId.value}`
-      }
+      },
+      credentials: "include",
     });
 
     if (response.ok) {

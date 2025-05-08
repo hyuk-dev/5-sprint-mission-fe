@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import ThemeRegistry from "@/core/components/ThemeRegistry";
 import { AuthProvider } from "@/core/lib/store/AuthContext";
 import { getUser } from "./actions/user";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "판다마켓",
@@ -26,12 +16,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const result = await getUser();
-  console.log(result)
+  console.log(result);
   return (
-    <html lang="ko">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en">
+      <body>
         <ThemeRegistry>
-          <AuthProvider initialUser={result.user}>{children}</AuthProvider>
+          <AuthProvider initialUser={result.user}>
+            <Providers>{children}</Providers>
+          </AuthProvider>
         </ThemeRegistry>
       </body>
     </html>

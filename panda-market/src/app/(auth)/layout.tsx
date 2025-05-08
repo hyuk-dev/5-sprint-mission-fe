@@ -30,7 +30,7 @@ export default function MainLayout({
       >
         <Link href="/">
           <Image
-            src="/images/login_logo.svg"
+            src="/imgs/login_logo.svg"
             alt="판다마켓 로그인 페이지 로고"
             width={396}
             height={132}

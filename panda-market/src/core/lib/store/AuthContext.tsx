@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext, useState } from "react";
 
 type AuthContextType = {
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);

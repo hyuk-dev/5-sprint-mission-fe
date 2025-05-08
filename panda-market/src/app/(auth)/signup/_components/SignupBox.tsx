@@ -3,7 +3,7 @@
 import BasicButton from "@/core/components/buttons/BasicButton";
 import PasswordInput from "@/core/components/inputs/PasswordInput";
 import { useForm } from "react-hook-form";
-import { SignupData } from "../types/formDatas";
+import { SignupData } from "../_types/formDatas";
 import TextInput from "@/core/components/inputs/TextInput";
 import { useActionState, useContext, useEffect } from "react";
 import { signup } from "@/app/actions/auth";

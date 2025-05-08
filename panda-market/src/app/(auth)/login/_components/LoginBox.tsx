@@ -2,8 +2,8 @@
 
 import BasicButton from "@/core/components/buttons/BasicButton";
 import PasswordInput from "@/core/components/inputs/PasswordInput";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { LoginData } from "../types/formDatas";
+import { useForm } from "react-hook-form";
+import { LoginData } from "../_types/formDatas";
 import TextInput from "@/core/components/inputs/TextInput";
 import { login } from "@/app/actions/auth";
 import { useRouter } from "next/navigation";
@@ -42,7 +42,10 @@ const LoginBox = () => {
       });
       router.push("/");
     }
-  }, [state.success, router]);
+    else if(state.error) {
+      alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.")
+    }
+  }, [state, router]);
 
   return (
     <form

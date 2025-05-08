@@ -8,6 +8,8 @@ export async function login(
   state: { success: boolean; error: any; status?: number; user?: User },
   formData: FormData
 ) {
+  const cookieStore = cookies();
+  const sessionId = (await cookieStore).get("connect.sid");
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -17,6 +19,7 @@ export async function login(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Cookie: `connect.sid=${sessionId?.value}`,
       },
       body: JSON.stringify({ email, password }),
       credentials: "include",
@@ -36,7 +39,7 @@ export async function login(
           cookieStore.set(name.trim(), value.trim(), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
           });
         });
@@ -90,7 +93,7 @@ export async function signup(
           cookieStore.set(name.trim(), value.trim(), {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             path: "/",
           });
         });
@@ -126,22 +129,29 @@ export async function signup(
   }
 }
 
-// 로그아웃 서버 액션
 export async function logout() {
   try {
     const cookieStore = await cookies();
-    const sessionId = cookieStore.get("sessionId")?.value;
+    const sessionId = cookieStore.get("connect.sid");
+
+    
     if (sessionId) {
       await fetch(`${process.env.BACKEND_API_URL}/auth/signout`, {
         method: "POST",
         headers: {
-          Cookie: `sessionId=${sessionId}`,
+          Cookie: `sessionId=${sessionId?.value}`, // 세션 쿠키를 서버로 전송
         },
       });
-      cookieStore.delete("sessionId");
+      
+      // 세션 쿠키 삭제
+      cookieStore.delete("connect.sid");
+
+      // 클라이언트에 응답 반환
+      return { success: true };
     }
-    return { success: true };
+    return { error: "세션 쿠키가 존재하지 않습니다."}
   } catch (error) {
+    console.error("로그아웃 실패", error);
     return { error: "로그아웃 실패" };
   }
 }

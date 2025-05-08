@@ -1,12 +1,13 @@
-// tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from "tailwindcss";
+
+const config: Config = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx}', // Next.js App Router 폴더
-    './components/**/*.{js,ts,jsx,tsx}', // 컴포넌트 폴더
+    "./src/**/*.{js,ts,jsx,tsx}", // ✅ src 전체 커버 (app 포함됨)
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};
+
+export default config;
